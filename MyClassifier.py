@@ -2,6 +2,7 @@ import sys
 import numpy
 from lib.Instance import Instance
 from lib.KNearestNeighbour import k_nearest_neighbour
+from lib.NaiveBayes import naive_bayes
 
 
 def parse_input_file(filename):
@@ -51,8 +52,7 @@ if __name__ in '__main__':
 
     if algorithm == 'NB':
         # Do Naive Bayesian classification
-        results = []
-        pass
+        results = naive_bayes(training_instances, testing_instances)
     else:
         k = int(algorithm.replace('NN', ''))
         # Do k-nearest neighbour classification
