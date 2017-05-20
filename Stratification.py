@@ -52,6 +52,9 @@ def make_folds(yes_instances, no_instances):
     while len(no_instances) > 0:
         folds[i % 10].append(no_instances.pop())
         i += 1
+
+    for i in range(10):
+        print(len(folds[i]))
     return folds
 
 
