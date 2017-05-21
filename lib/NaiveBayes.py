@@ -3,12 +3,13 @@ import numpy
 
 def naive_bayes(training_set, testing_set):
     set_length = len(training_set)
+    num_of_attributes = len(training_set[0].attributes)
     yes_count = 0
     no_count = 0
 
     # Split attributes into yes/no and types
     dict_of_attributes = dict()
-    for i in range(8):
+    for i in range(num_of_attributes):
         dict_of_attributes[i] = {'yes': [],
                                  'no': []
                                  }
@@ -18,7 +19,7 @@ def naive_bayes(training_set, testing_set):
             yes_count += 1
         else:
             no_count += 1
-        for i in range(8):
+        for i in range(num_of_attributes):
             dict_of_attributes[i][instance.class_variable].append(instance.attributes[i])
 
     # Get probability of yes/no
@@ -27,7 +28,7 @@ def naive_bayes(training_set, testing_set):
 
     # Obtain standard deviation and mean for each attribute/class
     stats_dict = dict()
-    for i in range(8):
+    for i in range(num_of_attributes):
         stats_dict[i] = {'s_dev': {'yes': numpy.std(dict_of_attributes[i]['yes']),
                                    'no': numpy.std(dict_of_attributes[i]['no'])},
                          'mean': {'yes': numpy.mean(dict_of_attributes[i]['yes']),
@@ -43,7 +44,7 @@ def naive_bayes(training_set, testing_set):
     for instance in testing_set:
         nb_yes = p_yes
         nb_no = p_no
-        for i in range(8):
+        for i in range(num_of_attributes):
             nb_yes *= probability_density_function(instance.attributes[i],
                                                    stats_dict[i]['mean']['yes'],
                                                    stats_dict[i]['s_dev']['yes'])
