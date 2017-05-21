@@ -16,29 +16,18 @@ def parse_input_file(filename):
         for line in infile:
             attributes = line.split(',')
             # convert from str to float
-            for i in range(8):
-                attributes[i] = numpy.float(attributes[i])
+            for i in range(len(attributes)):
+                if attributes[i] != 'yes\n' and attributes[i] != 'no\n':
+                    attributes[i] = numpy.float(attributes[i])
+                else:
+                    attributes[i] = attributes[i].replace('\n', '')
+            # If this is a training set
+            if attributes[-1] == 'yes' or attributes[-1] == 'no':
+                instances.append(Instance(attributes=attributes[0:len(attributes)-1], class_variable=attributes[-1]))
             # If this is a testing set
-            if len(attributes) == 8:
-                instances.append(Instance(attributes[0],
-                                          attributes[1],
-                                          attributes[2],
-                                          attributes[3],
-                                          attributes[4],
-                                          attributes[5],
-                                          attributes[6],
-                                          attributes[7]))
-            # Otherwise it is a training set
-            elif len(attributes) == 9:
-                instances.append(Instance(attributes[0],
-                                          attributes[1],
-                                          attributes[2],
-                                          attributes[3],
-                                          attributes[4],
-                                          attributes[5],
-                                          attributes[6],
-                                          attributes[7],
-                                          class_variable=attributes[8].replace('\n', '')))
+            else:
+                instances.append(Instance(attributes=attributes))
+
     return instances
 
 
