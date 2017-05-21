@@ -11,17 +11,10 @@ def parse_input_file(filename):
     with open(filename, "r") as infile:
         for line in infile:
             attributes = line.split(',')
-            for i in range(8):
+            for i in range(len(attributes)-1):
                 attributes[i] = numpy.float(attributes[i])
-            instance = Instance(attributes[0],
-                                attributes[1],
-                                attributes[2],
-                                attributes[3],
-                                attributes[4],
-                                attributes[5],
-                                attributes[6],
-                                attributes[7],
-                                class_variable=attributes[8].replace('\n', ''))
+            attributes[-1] = attributes[-1].replace('\n', '')
+            instance = Instance(attributes=attributes[0:len(attributes)-1], class_variable=attributes[-1])
             if instance.class_variable == 'yes':
                 yes_instances.append(instance)
             else:
@@ -64,9 +57,10 @@ def convert_instance_to_string(instance):
     return string
 
 
-def ten_fold_cross_validation(folds, KNN):
+def ten_fold_cross_validation(folds):
     nb_accuracy = []
-    knn_accuracy = []
+    one_nn_accuracy = []
+    five_nn_accuracy = []
     for i in range(10):
         validation_instances = folds[i]
         training_instances = []
@@ -75,32 +69,41 @@ def ten_fold_cross_validation(folds, KNN):
                 training_instances += folds[j]
         nb_results = naive_bayes(testing_set=validation_instances,
                                  training_set=training_instances)
-        knn_results = k_nearest_neighbour(training_set=training_instances,
-                                          testing_set=validation_instances,
-                                          k=KNN)
+        one_nn_results = k_nearest_neighbour(training_set=training_instances,
+                                             testing_set=validation_instances,
+                                             k=1)
+        five_nn_results = k_nearest_neighbour(training_set=training_instances,
+                                              testing_set=validation_instances,
+                                              k=5)
         # get accuracies
         nb_score = 0
-        knn_score = 0
+        one_nn_score = 0
+        five_nn_score = 0
         for k in range(len(validation_instances)):
             if nb_results[k] == validation_instances[k].class_variable:
                 nb_score += 1
-            if knn_results[k] == validation_instances[k].class_variable:
-                knn_score += 1
+            if one_nn_results[k] == validation_instances[k].class_variable:
+                one_nn_score += 1
+            if five_nn_results[k] == validation_instances[k].class_variable:
+                five_nn_score += 1
         nb_accuracy.append(nb_score/len(validation_instances))
-        knn_accuracy.append(knn_score/len(validation_instances))
+        one_nn_accuracy.append(one_nn_score/len(validation_instances))
+        five_nn_accuracy.append(five_nn_score / len(validation_instances))
         print('Round {} accuracy for Naive Bayes: {}'.format(i+1, nb_accuracy[i]))
-        print('Round {} accuracy for {}-Nearest Neighbours: {}'.format(i + 1, KNN, nb_accuracy[i]))
+        print('Round {} accuracy for 1-Nearest Neighbours: {}'.format(i + 1, one_nn_accuracy[i]))
+        print('Round {} accuracy for 5-Nearest Neighbours: {}'.format(i + 1, five_nn_accuracy[i]))
 
     nb_average_acc = numpy.mean(nb_accuracy)
-    knn_average_acc = numpy.mean(knn_accuracy)
+    one_nn_average_acc = numpy.mean(one_nn_accuracy)
+    five_nn_average_acc = numpy.mean(five_nn_accuracy)
     print('Average accuracy for Naive Bayes: {}%'.format(nb_average_acc))
-    print('Average accuracy for {0}-Nearest Neighbours: {1}%'.format(k, knn_average_acc))
+    print('Average accuracy for 1-Nearest Neighbours: {}%'.format(one_nn_average_acc))
+    print('Average accuracy for 5-Nearest Neighbours: {}%'.format(five_nn_average_acc))
 
 
 if __name__ in '__main__':
     input_file = sys.argv[1]
-    k_n_n = int(sys.argv[2])
     yes, no = parse_input_file(input_file)
     stratified_folds = make_folds(yes, no)
-    ten_fold_cross_validation(stratified_folds, k_n_n)
+    ten_fold_cross_validation(stratified_folds)
     # write_output_file(stratified_folds)
