@@ -5,7 +5,7 @@ def k_nearest_neighbour(training_set, testing_set, k):
         neighbours = []
         for training_instance in training_set:
             training_instance.set_distance(test_instance)
-            insert_instance(training_instance, neighbours, k)
+            insert_instance(training_instance, neighbours)
         neighbours = neighbours[0:k]
         # print([neighbour.class_variable for neighbour in neighbours])
         yes_count = 0
@@ -24,7 +24,7 @@ def k_nearest_neighbour(training_set, testing_set, k):
     return results
 
 
-def insert_instance(instance, neighbours, k):
+def insert_instance(instance, neighbours):
     if len(neighbours) != 0:
         for i in range(len(neighbours)):
             if neighbours[i].distance >= instance.distance:
